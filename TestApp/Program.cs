@@ -27,9 +27,8 @@ namespace TestApp
             var key = GetRandomBytes(16);
             // Get specified amount of random data
             var data = GetRandomBytes(length);
-            // Initialize Chaskey engine
+            // Initialize SipHash engine
             var siphash = new SipHash.SipHash(key);
-            var tag = new byte[16];
 
             // Benchmark
             var stopWatch = Stopwatch.StartNew();
