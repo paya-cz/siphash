@@ -159,10 +159,9 @@ namespace SipHash
 
             unsafe
             {
-                fixed (byte* arrayStart = data)
+                // Start of the data to process
+                fixed (byte* dataStart = &data[offset])
                 {
-                    // Start of the data to process
-                    var dataStart = arrayStart + offset;
                     // The last 64-bit block of data
                     var finalBlock = dataStart + (count & ~7);
 
