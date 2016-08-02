@@ -27,14 +27,6 @@ namespace SipHash
         /// Part of the initial 256-bit internal state.
         /// </summary>
         private readonly ulong initialState1;
-        /// <summary>
-        /// Part of the initial 256-bit internal state.
-        /// </summary>
-        private readonly ulong initialState2;
-        /// <summary>
-        /// Part of the initial 256-bit internal state.
-        /// </summary>
-        private readonly ulong initialState3;
 
         #endregion
 
@@ -53,8 +45,6 @@ namespace SipHash
 
             this.initialState0 = 0x736f6d6570736575UL ^ BitConverter.ToUInt64(key, 0);
             this.initialState1 = 0x646f72616e646f6dUL ^ BitConverter.ToUInt64(key, sizeof(ulong));
-            this.initialState2 = 0x1F160A001E161714UL ^ this.initialState0;
-            this.initialState3 = 0x100A160317100A1EUL ^ this.initialState1;
         }
 
         /// <summary>Initializes a new instance of SipHash pseudo-random function using the specified 128-bit key.</summary>
@@ -71,11 +61,9 @@ namespace SipHash
                 throw new ArgumentOutOfRangeException(nameof(offset), "Array offset cannot be negative.");
             if (key.Length - offset < 16)
                 throw new ArgumentException("The specified '" + nameof(offset) + "' parameter does not specify a valid 16-byte range in '" + nameof(key) + "'.");
-            
+
             this.initialState0 = 0x736f6d6570736575UL ^ BitConverter.ToUInt64(key, offset);
             this.initialState1 = 0x646f72616e646f6dUL ^ BitConverter.ToUInt64(key, offset + sizeof(ulong));
-            this.initialState2 = 0x1F160A001E161714UL ^ this.initialState0;
-            this.initialState3 = 0x100A160317100A1EUL ^ this.initialState1;
         }
 
         #endregion
@@ -96,8 +84,8 @@ namespace SipHash
                     fixed (byte* p = key)
                     {
                         var p64 = (ulong*)p;
-                        *p64 = this.initialState0 ^ 0x736f6d6570736575UL;
-                        *(p64 + 1) = this.initialState1 ^ 0x646f72616e646f6dUL;
+                        p64[0] = this.initialState0 ^ 0x736f6d6570736575UL;
+                        p64[1] = this.initialState1 ^ 0x646f72616e646f6dUL;
                     }
                 }
 
@@ -151,8 +139,8 @@ namespace SipHash
             // SipHash internal state
             var v0 = this.initialState0;
             var v1 = this.initialState1;
-            var v2 = this.initialState2;
-            var v3 = this.initialState3;
+            var v2 = 0x1F160A001E161714UL ^ this.initialState0;
+            var v3 = 0x100A160317100A1EUL ^ this.initialState1;
 
             // We process data in 64-bit blocks
             ulong block;
