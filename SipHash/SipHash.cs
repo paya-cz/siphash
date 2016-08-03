@@ -81,11 +81,11 @@ namespace SipHash
 
                 unsafe
                 {
-                    fixed (byte* p = key)
+                    fixed (byte* pKey = key)
                     {
-                        var p64 = (ulong*)p;
-                        p64[0] = this.initialState0 ^ 0x736f6d6570736575UL;
-                        p64[1] = this.initialState1 ^ 0x646f72616e646f6dUL;
+                        var pKey64 = (ulong*)pKey;
+                        pKey64[0] = this.initialState0 ^ 0x736f6d6570736575UL;
+                        pKey64[1] = this.initialState1 ^ 0x646f72616e646f6dUL;
                     }
                 }
 
@@ -139,6 +139,7 @@ namespace SipHash
             // SipHash internal state
             var v0 = this.initialState0;
             var v1 = this.initialState1;
+            // It is faster to load the initialStateX fields from memory again than to reference v0 and v1:
             var v2 = 0x1F160A001E161714UL ^ this.initialState0;
             var v3 = 0x100A160317100A1EUL ^ this.initialState1;
 
@@ -154,9 +155,9 @@ namespace SipHash
                     var finalBlock = dataStart + (count & ~7);
 
                     // Process the input data in blocks of 64 bits
-                    for (var blockPointer = (ulong*)dataStart; blockPointer < finalBlock; blockPointer++)
+                    for (var blockPointer = (ulong*)dataStart; blockPointer < finalBlock;)
                     {
-                        block = *blockPointer;
+                        block = *blockPointer++;
 
                         v3 ^= block;
 
