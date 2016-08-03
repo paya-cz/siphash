@@ -11,24 +11,25 @@ namespace TestApp
             // Run tests
             new SipHash.Tests.SipHashTest().TestBattery();
 
-            // JIT
-            BenchmarkSipHash(1, 1, false);
+            // JIT + heat up the CPU
+            BenchmarkSipHash(2621440, 4 * 1024, false);
             // Real benchmark - digest 4 KiB 2 621 440 times (10 GiB of data)
             BenchmarkSipHash(2621440, 4 * 1024, true);
+            // And 7 bytes 153391689 times (1 GiB of data)
+            BenchmarkSipHash(153391689, 7, true);
 
             Console.WriteLine();
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
         }
 
-        private static void BenchmarkSipHash(int iterations, int length, bool log)
+        private static void BenchmarkSipHash(int iterations, int length, bool showOutput)
         {
-            // Get random key
-            var key = GetRandomBytes(16);
-            // Get specified amount of random data
+            // Initialize SipHash engine with a random key
+            var siphash = new SipHash.SipHash(GetRandomBytes(16));
+            
+            // Generate specified amount of random data
             var data = GetRandomBytes(length);
-            // Initialize SipHash engine
-            var siphash = new SipHash.SipHash(key);
 
             // Benchmark
             var stopWatch = Stopwatch.StartNew();
@@ -36,12 +37,12 @@ namespace TestApp
                 siphash.Compute(data, 0, data.Length);
             var elapsed = stopWatch.Elapsed;
 
-            if (log)
+            if (showOutput)
             {
                 Console.WriteLine("SipHash benchmark results:");
+                Console.WriteLine("- Digested {0} {1} times", BytesToString(data.Length), iterations);
                 Console.WriteLine("- Elapsed: {0}", elapsed.ToString(@"hh\:mm\:ss\.fff"));
-                Console.WriteLine("- Digested {0} bytes ({1} KiB) {2} times", data.Length, (data.Length / 1024d).ToString("N2"), iterations);
-                Console.WriteLine("- Speed: {0} MiB/s", (data.Length / 1024d / 1024d / elapsed.TotalSeconds * iterations).ToString("N2"));
+                Console.WriteLine("- Speed: {0}/s", BytesToString(data.Length / elapsed.TotalSeconds * iterations));
             }
         }
 
@@ -54,6 +55,19 @@ namespace TestApp
             using (var rng = new RNGCryptoServiceProvider())
                 rng.GetBytes(bytes);
             return bytes;
+        }
+
+        private static string BytesToString(double bytes)
+        {
+            if (bytes < 1024)
+                return bytes.ToString("N0") + " B";
+
+            var KiB = bytes / 1024d;
+            if (KiB < 1024)
+                return KiB.ToString("N1") + " KiB";
+
+            var MiB = KiB / 1024d;
+            return MiB.ToString("N1") + " MiB";
         }
     }
 }
