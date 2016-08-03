@@ -7,7 +7,7 @@ SipHash PRF implementation in C#, heavily optimized towards speed. This code is 
 Below are the results of a benchmark I ran on i7 3630QM.
 
 64-bit mode (processing 10 GiB in 4 KiB chunks):
-- SipHash: 1 200 MiB/s
+- SipHash: 1 226 MiB/s
 
 32-bit mode (processing 10 GiB in 4 KiB chunks):
-- SipHash: 315 MiB/s
+- SipHash: 324 MiB/s
