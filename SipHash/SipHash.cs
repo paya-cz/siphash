@@ -1,17 +1,12 @@
-﻿// ###############################################################
-// # Downloaded from:         https://github.com/paya-cz/siphash #
-// # Author:                  Pavel Werl                         #
-// # License:                 Public Domain                      #
-// ###############################################################
-
-// SipHash paper:           https://131002.net/siphash/siphash.pdf
-// SipHash website:         https://131002.net/siphash/
+﻿// Downloaded from: https://github.com/paya-cz/siphash
+// Author:          Pavel Werl
+// License:         Public Domain
+// SipHash website: https://131002.net/siphash/
 
 using System;
 
 namespace SipHash
 {
-
     /// <summary>
     /// This class is immutable and thread-safe.
     /// </summary>
